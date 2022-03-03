@@ -8,66 +8,93 @@ import { shadeColor } from '../javascript/shadeColor';
 import Svg, { Defs, Polygon, Stop, LinearGradient as SvgLinearGradient } from 'react-native-svg';
 
 
-function PokemonCard({pokemon}) {
+function PokemonCard({pokemon, style}) {
     const navigation = useNavigation();
-    let SecondBackgroundColor = () => (null);
-    
-    const backgroundGradient1 = [typeResources[pokemon.types[0].type.name].color];
-    const secondType = pokemon.types[1]?.type.name;
-    const backgroundGradient2 = [typeResources[secondType]?.color];
-    if(backgroundGradient2[0] != null) { 
-        backgroundGradient1.push(shadeColor(backgroundGradient1[0], 35)); // Lite mer gradient för att slutet täcks av andra färgen
-        backgroundGradient2.push(shadeColor(backgroundGradient2[0], 35));
-        SecondBackgroundColor = () => (
+    let SecondBackgroundElement = () => (null);
+
+    // Kan inte använda pokemon.types då den kan innehålla typer som inte finns i gen 1
+    const types = []
+    let backgroundGradient;
+
+    let type1 = pokemon.types[0].type.name;
+    let type2 = pokemon.types[1]?.type.name;
+    if(isTypeValid(type1) == false)
+        type1 = pokemon.past_types[0].types[0].type.name;
+    types.push(type1);
+    let color1 = typeResources[type1].color;    
+
+    switch(isTypeValid(type2)){
+        case false: 
+            backgroundGradient = [color1, shadeColor(color1, 35)];
+            break;
+
+        case true:
+            types.push(type2);
+            // Lite mer gradient för att slutet täcks av andra färgen
+            backgroundGradient = [color1, shadeColor(color1, 45)];
+            SecondBackgroundElement = () => createSecondBackground(type2);
+    }
+
+    function isTypeValid(type){
+        if(typeResources[type] != null)
+            return true;
+        else return false;
+    }
+
+    function createSecondBackground(type){
+        const color2 = typeResources[type].color;        
+        const backgroundGradient2 = [color2, shadeColor(color2, 45)]; 
+        return (
+            // Svg måste ha en container för att fungera med storlek i procent
             <View style={styles.secondBackgroundColor}>
-                {/* Svg måste ha en container för att fungera med storlek i procent */}
-                <Svg style={{width:"100%", height:"100%"}} viewBox="0 0 100 100" preserveAspectRatio='none'>
+                <Svg style={{width:"100%", height:"100%"}} viewBox="0 0 100 100" preserveAspectRatio="none">
                     <Defs>
-                        <SvgLinearGradient id={secondType} x1="1" x2="0" y1="0.5" y2="0.5">
+                        <SvgLinearGradient id={type} x1="1" x2="0" y1="0.5" y2="0.5">
                             <Stop offset="0" stopColor={backgroundGradient2[0]} />
                             <Stop offset="1" stopColor={backgroundGradient2[1]} />
                         </SvgLinearGradient>
                     </Defs>
-                    <Polygon points="50,0 100,0 100,100 0,100" fill={`url(#${secondType})`} />                
+                    <Polygon points="50,0 100,0 100,100 0,100" fill={`url(#${type})`} />                
                 </Svg>
             </View>
         );
     }
-    else{
-        backgroundGradient1.push(shadeColor(backgroundGradient1[0], 25)); // Lite mindre gradient med bara en färg
-    }
 
-    return (
-        <LinearGradient 
-            style={styles.background}
-            colors={backgroundGradient1} 
-            start={{x: 0, y: 0.5}}
-            end={{x: 1, y: 0.5}}
-        >
-            <TouchableOpacity onPress={() => navigation.navigate("Details", pokemon)} style={styles.container}>
+    return (        
+        <TouchableOpacity onPress={() => navigation.navigate("Details", pokemon)} >
+            {/* BackgroundColor 1 */}
+            <LinearGradient 
+                style={[styles.background, style]}
+                colors={backgroundGradient} 
+                start={{x: 0, y: 0.5}}
+                end={{x: 1, y: 0.5}}  
+            >
+                {/* Image */}
                 <LinearGradient colors={["white", "#ededed"]} style={styles.imageContainer}>
                     <Image 
                         style={{width: "100%", height: "100%"}}
                         source={{ uri: pokemon.sprites.other["official-artwork"].front_default}}
                     />
                 </LinearGradient>
-                <View style={styles.centerContainer}>                    
-                    <Text style={styles.id}>#{pokemon.id}</Text>
-                    <View style={styles.infoContainer}>
-                            <Text style={styles.text}>{pokemon.name}</Text>
-                        <View style={styles.typesContainer}>
-                            {pokemon.types.map(item => (
-                                <TypeCardSmall type={item.type.name} style={{marginRight:"5px"}} key={item.type.name}/>
-                            ))}
-                        </View>
+
+                {/* Info */}
+                <View style={styles.infoContainer}>
+                    <View style={{flexDirection:"row", alignItems:"flex-start"}}>
+                        <Text style={styles.text}>{pokemon.name}</Text>                        
+                        <Text style={styles.id}>#{pokemon.id}</Text>
+                    </View>  
+                    <View style={styles.typesContainer}>
+                        {types.map(type => (
+                            <TypeCardSmall type={type} style={{marginRight:5}} key={type}/>
+                        ))}
                     </View>
                 </View>
 
-                {/* position absolute */}
-                <SecondBackgroundColor />
+                {/* BackgroundColor 2 */}
+                <SecondBackgroundElement />
 
-            </TouchableOpacity>
-        </LinearGradient>
+            </LinearGradient>
+        </TouchableOpacity>
     );
 }
 
@@ -75,7 +102,8 @@ export default memo(PokemonCard);
 
 const styles = StyleSheet.create({
     background: {
-        minWidth:200,
+        flexDirection:"row",
+        minWidth:250,
         margin:5,
         borderRadius: 5,   
         shadowColor: 'black',
@@ -84,6 +112,8 @@ const styles = StyleSheet.create({
         shadowRadius: 4,  
         elevation: 7,
         overflow:"hidden",
+
+        position:"relative"
     },
     secondBackgroundColor:{
         position:"absolute",
@@ -91,10 +121,6 @@ const styles = StyleSheet.create({
         right:0,
         height: "100%",
         width:"35%",
-    },
-    container:{
-        display:"flex",
-        flexDirection:"row",
     },
     text:{
         fontSize:20,
@@ -104,9 +130,10 @@ const styles = StyleSheet.create({
         textShadowColor:"black",
         textShadowOffset :{height:0, width:0},
         textShadowRadius:5,
+        marginTop:10,
+        flexGrow:1,
     },
     id:{
-        marginLeft:"auto",
         marginTop:5,
         marginRight:5,
         paddingHorizontal: 5,
@@ -127,23 +154,16 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:"lightgray",
     },
-    centerContainer:{
-        zIndex:2,
-        display:"flex",   
-        flexGrow:1,
-    },
     infoContainer:{
-        display:"flex",
+        zIndex:2,
         flexGrow:1,
         justifyContent:"space-between",
         paddingBottom:10,
-        paddingRight:10,
         paddingLeft:5,
-        marginTop:-10,
     },
     typesContainer:{
-        marginVertical: 3,
-        display:"flex",
         flexDirection:"row",
+        marginVertical: 3,
+        marginRight:5,
     }
 });

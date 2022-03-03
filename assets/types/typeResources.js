@@ -1,3 +1,31 @@
+
+function isTypeValid(type){
+    if(typeResources[type] != null)
+        return true;
+    else return false;
+}
+
+// pokemon måste vara json-objektet från pokeapi
+// Returnerar bara types som finns definierade i typeResources
+export  function getTypes(pokemon){
+    const types = [];
+
+    let type1 = pokemon.types[0]?.type.name;
+    if(isTypeValid(type1) == false){
+        type1 = pokemon.past_types[0]?.types[0].type.name;
+        if(isTypeValid(type1 == false))
+            return types;
+    }
+    types.push(type1);
+
+    let type2 = pokemon.types[1]?.type.name;    
+    if(isTypeValid(type2))
+        types.push(type2);
+
+    return types;
+};
+
+// Bortkommenterad {color} är orginalfärg tagen från ikonerna
 export const typeResources = {
     all: {
         color: "white",
@@ -20,7 +48,8 @@ export const typeResources = {
         image: require("./icons/GO_Fighting.webp"),
     },
     fire:{
-        color: "#fca052",
+        // color: "#fca052",
+        color: "#ed6340",
         image: require("./icons/GO_Fire.webp"),
     },
     flying:{
@@ -32,7 +61,8 @@ export const typeResources = {
         image: require("./icons/GO_Ghost.webp"),
     },
     grass:{
-        color: "#5ebc5a",
+        // color: "#5ebc5a",
+        color: "#4fa14c",
         image: require("./icons/GO_Grass.webp"),
     },
     ground:{
@@ -44,7 +74,8 @@ export const typeResources = {
         image: require("./icons/GO_Ice.webp"),
     },
     normal:{
-        color: "#9a9fa2",
+        // color: "#9a9fa2",
+        color: "#ababab",
         image: require("./icons/GO_Normal.webp"),
     },
     poison:{
@@ -64,8 +95,17 @@ export const typeResources = {
         image: require("./icons/GO_Water.webp"),
     },
     
-    // Inte gen-1
-    // dark:"#646374",
-    // steel:"#5491a0",
-    // fairy:"#f4a1e4",
+    // Inte gen-1    
+    // dark:{
+    //     color: "#646374",
+    //     image: require("./icons/GO_Dark.webp"),
+    // },
+    // steel:{
+    //     color: "#5491a0",
+    //     image: require("./icons/GO_Steel.webp"),
+    // },
+    // fairy:{
+    //     color: "#f4a1e4",
+    //     image: require("./icons/GO_Fairy.webp"),
+    // },
 };

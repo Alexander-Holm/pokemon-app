@@ -4,6 +4,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import customRef from '../javascript/customRef';
 import SearchBar from '../components/SearchBar';
 import TypeCard from '../components/TypeCard';
+import { getTypes } from '../assets/types/typeResources';
 
 export default function TypesView({navigation, route}) {
 
@@ -49,7 +50,7 @@ export default function TypesView({navigation, route}) {
             const apiCalls = [];
             for(let i = 0; i < route.params.numberOfPokemon; i++){                
                 const promise = 
-                    fetch("https://pokeapi.co/api/v2/pokemon/" + (i+1))
+                    fetch("https://pokeapi.co/api/v2/pokemon/" + (i+30))
                         .then(res => checkHttpResponse(res))
                         .then(res => res.json())                   
                         .catch(e => httpErrorHandler(e));
@@ -79,8 +80,9 @@ export default function TypesView({navigation, route}) {
         // Sparar alla pokemon av typen i en array för att inte behöva söka igenom alla igen nästa gång.
         if(pokemonOfType.length < 1){            
             allPokemon.forEach(pokemon => {
-                for (let i = 0; i < pokemon.types.length; i++) {
-                    if(pokemon.types[i].type.name === type){
+                const validTypes = getTypes(pokemon);
+                for (let i = 0; i < validTypes.length; i++) {
+                    if(validTypes[i] === type){
                         pokemonOfType.push(pokemon);
                         break;
                     }            
@@ -95,39 +97,30 @@ export default function TypesView({navigation, route}) {
         navigation.navigate("PokemonList", {allPokemon: allPokemon, listPokemon: pokemonOfType, type: type})
     };
 
-   
+    if(isLoading)(
+        <ActivityIndicator size="large" style={{alignSelf:"center"}}/>
+    )
 
-    const loadingOverlay =
-        <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" />
+    if(errors.length > 0)(
+        <View>
+            <Text style={{marginBottom:10}}>Something went wrong while fetching the data</Text>
+            {errors.map((error, index) => (
+                <View key={index} style={{marginVertical:10}}>
+                    <Text>{index + 1}.</Text>
+                    <Text>                                
+                        {error}
+                    </Text>
+                </View>
+            ))}
         </View>
-
-    if(errors.length > 0){
-        return(
-            <View>
-                <Text style={{marginBottom:"10px"}}>Something went wrong while fetching the data</Text>
-                {errors.map((error, index) => {
-                    return(
-                        <View key={index} style={{marginVertical:"10px"}}>
-                            <Text>{index + 1}.</Text>
-                            <Text>                                
-                                {error}
-                            </Text>
-                        </View>
-                    )
-                })}
-            </View>
-        )
-    }
+    )
     return(
-        <View >
-            {isLoading && loadingOverlay}
-
+        <View>
             <SearchBar data={allPokemonRef.current} />
-
             {/* ScrollView istället för FlatList för att kunna ha flex-wrap */}
-            <ScrollView contentContainerStyle={styles.container}>
-                {Object.keys(types).map(item => (
+            <ScrollView contentContainerStyle={styles.container} >
+                {/* Måste ha sort(), ordningen byts av någon anledning när man trycker på någon och sen går tillbaka */}
+                {Object.keys(types).sort().map(item => (
                     <TypeCard type={item} onPress={() => typeButtonOnPress(item)} key={item} />
                 ))}
             </ScrollView>
@@ -140,17 +133,10 @@ const styles = StyleSheet.create({
         display:"flex",
         flexWrap:"wrap",
         flexDirection:"row",
-        justifyContent:"flex-start",
-        margin:20,
-    },
-    loadingOverlay:{
-        zIndex:99,
-        position:"absolute",
-        height:"100vh", 
-        width:"100vw", 
-        backgroundColor: 'rgba(50, 50, 50, 0.2)', 
-        display:"flex",
-        alignItems:"center",
         justifyContent:"center",
+        padding:5,
+        paddingTop:10,
+        // Extra paddingBottom annars klipps sista biten av
+        paddingBottom:100,
     },
 });

@@ -7,7 +7,29 @@ export default function DetailsView({navigation, route}){
 
     const [isLoading, setLoading] = useState(true);
     const [pokemon, setPokemon] = useState(route.params);
-    const [evolutions, setEvolutions] = useState([]);
+    const [rootEvolution, setRootEvolution] = useState();
+
+    async function fetchEvolutions(){
+        fetch(pokemon.species.url)
+            .then(res => res.json())
+            .then(json => {
+                fetch(json.evolution_chain.url)
+                    .then(res => res.json())
+                        .then(json => {                            
+                            const nestedEvolutions = findEvolutions(json.chain);
+                            setRootEvolution(nestedEvolutions);
+                        })
+            })
+    }
+    function findEvolutions(evolutionChain){
+        const root = { name: evolutionChain.species.name, evolutions: [] };
+        evolutionChain.evolves_to.forEach(item => {
+            const nextEvolution = findEvolutions(item)
+            root.evolutions.push( nextEvolution );
+        })
+        return root;
+    }
+    
 
     useFocusEffect(        
         React.useCallback(() => {
@@ -23,30 +45,16 @@ export default function DetailsView({navigation, route}){
                 .finally(() => setLoading(false))
             }
 
-            
-            fetch(pokemon.species.url)
-                .then(res => res.json())
-                .then(json => {
-                    fetch(json.evolution_chain.url)
-                        .then(res => res.json())
-                            .then(json => {
-                                const evolutionsTemp = [];
-                                evolutionsTemp.push(json.chain.species.name);
-                                function addNextEvolutionRecursively(evolves_to){
-                                    evolves_to?.map(item => {
-                                        evolutionsTemp.push(item.species.name);
-                                        if(item.evolves_to.length > 0)
-                                            addNextEvolutionRecursively(item.evolves_to);    
-                                    })
-                                };
-                                addNextEvolutionRecursively(json.chain.evolves_to);
-                                setEvolutions(evolutionsTemp);
-                            })
-                })
-            
-
+            fetchEvolutions();
         },[])
-    )
+    );
+
+    // const Ev = pokemon => (
+    //     <View>
+    //         <Text>{pokemon.name}</Text>
+    //         {pokemon.evolutions.map()}
+    //     </View>
+    // )
 
     if(isLoading)
         return <ActivityIndicator size="large" />
@@ -82,13 +90,26 @@ export default function DetailsView({navigation, route}){
                     })}
                 </View>
 
-                <FlatList
+                {/* <FlatList
                     data={evolutions}
                     keyExtractor={item => item}
                     renderItem={item =>
                         <Text>{item.item}</Text>
                 }
-                />
+                /> */}
+                {/* {rootEvolution &&
+                    <View>
+                        <Text style={{borderBottomColor:"red", borderBottomWidth:2}}>{rootEvolution.name}</Text>
+                        {rootEvolution.evolutions.map(pokemon => (
+                            <View>
+                                <Text style={{borderBottomColor:"blue", borderBottomWidth:2}}>{pokemon.name}</Text>
+                                {pokemon.evolutions.map(pokemon => (
+                                    <Text>{pokemon.name}</Text>
+                                ))}
+                            </View>
+                        ))}
+                    </View>
+                } */}
             </View>     
         </ScrollView>
     )

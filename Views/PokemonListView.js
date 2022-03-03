@@ -11,17 +11,19 @@ export default function PokemonListView({route}) {
     const [listPokemon, setListPokemon] = useState(route.params.listPokemon);
 
     return (
-        <View style={{flex:1, justifyContent:"flex-start", alignItems:"center"}}>   
-            
+        <View>               
             <SearchBar data={allPokemon} />
 
             <FlatList
+                // Extra paddingBottom annars klipps sista biten av
+                contentContainerStyle={{alignSelf:"center", paddingTop:20, paddingBottom:100}}
                 data={listPokemon}
                 keyExtractor={item => item.id.toString()}
                 renderItem={item =>
                     <PokemonCard pokemon={item.item} />
                 }
             />
+
         </View>
    )  
 }

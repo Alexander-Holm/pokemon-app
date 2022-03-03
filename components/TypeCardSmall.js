@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
         borderRadius:2,
         padding: 5,
         display:"flex",
-        flexDirection:"row"
+        flexDirection:"row",
+        alignItems:"center",
     },
     icon:{
         width: 20,
@@ -33,6 +34,6 @@ const styles = StyleSheet.create({
         textAlign:"center",
         textTransform:"capitalize",
         marginLeft:3,
-        flex:1,
+        flexGrow:1,
     }
 });

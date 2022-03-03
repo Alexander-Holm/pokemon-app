@@ -2,6 +2,7 @@ import { ActivityIndicator, Button, StyleSheet, Text, TextInput, Image, Touchabl
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { typeResources, getTypes } from '../assets/types/typeResources';
 
 export default function SearchBar({data}){
     const navigation = useNavigation()
@@ -39,26 +40,30 @@ export default function SearchBar({data}){
 
     return (        
         <View>
-            <View style={styles.SearchBar}>
+            <View style={styles.searchBar}>
                 <TextInput placeholder="Search..." onChangeText={(text) => updateSearchResults(text)} value={searchValue}
-                    style={styles.InputField}
+                    style={styles.inputField}
                 />
                 {searchValue != "" &&
-                    <TouchableOpacity style={styles.ButtonClear}
+                    <TouchableOpacity style={styles.buttonClear}
                         onPress={() => clearSearch()} >
-                        <Text style={styles.ButtonClearText}>X</Text>
+                        <Text style={styles.buttonClearText}>X</Text>
                     </TouchableOpacity> 
                 }
             </View>
 
-            <FlatList data={filteredPokemon} keyExtractor={item => item.name} renderItem={({item}) =>
-                <TouchableOpacity onPress={() => navigation.navigate("Details", item)}
-                    style={styles.ResultRow}>
+            <FlatList data={filteredPokemon} keyExtractor={item => item.name} renderItem={ ({item: pokemon }) => 
+                <TouchableOpacity onPress={() => navigation.navigate("Details", pokemon)} style={styles.resultRow}>
                     <Image 
-                        style={styles.ResultImage}
-                        source={{ uri: item.sprites.other["official-artwork"].front_default}}
+                        style={styles.pokemonImage}
+                        source={{ uri: pokemon.sprites.other["official-artwork"].front_default}}
                     />
-                    <Text style={styles.ResultText}>{item.name}</Text>
+                    <View style={styles.pokemonTypesContainer}>
+                        {getTypes(pokemon).map(type => (
+                            <Image source={typeResources[type]?.image} style={styles.pokemonTypeImage} key={type}/>
+                        ))}
+                    </View>
+                    <Text style={styles.pokemonName}>{pokemon.name}</Text>
                 </TouchableOpacity>
             } />            
         </View>
@@ -67,23 +72,23 @@ export default function SearchBar({data}){
 }
 
 const styles = StyleSheet.create({
-    SearchBar:{
+    searchBar:{
         backgroundColor:"white",
         flexDirection:"row",
         alignItems:"center",
         borderColor:"black", 
         borderWidth:1, 
-        borderRadius:10,
+        borderRadius:0,
         padding:5,
         margin: 5,
         marginBottom:0,
         height: 45
     },
-    InputField:{
+    inputField:{
         flex:1,
         fontSize:22,
     },
-    ResultRow:{
+    resultRow:{
         display:"flex",
         flexDirection:"row",
         alignItems:"center",       
@@ -91,15 +96,25 @@ const styles = StyleSheet.create({
         borderColor:"black", 
         borderBottomWidth:1, 
     },
-    ResultImage:{
-        width: 50, 
-        height: 50,
-    },
-    ResultText:{        
-        fontSize:20,
-        padding:16,
-    },    
-    ButtonClear:{
+        pokemonImage:{
+            width: 50, 
+            height: 50,
+        },
+        pokemonTypesContainer:{
+            justifyContent:"center",
+            marginHorizontal:5,
+        },
+            pokemonTypeImage:{
+                height: 18,
+                width: 18,
+                margin: 2,
+            },
+        pokemonName:{        
+            fontSize:20,
+            textTransform:"capitalize",
+            marginLeft:5,
+        },    
+    buttonClear:{
         marginHorizontal:3,        
         padding:7,
         backgroundColor:"#457B9D",
@@ -109,9 +124,9 @@ const styles = StyleSheet.create({
         width:40,
         height: 40,
     },
-    ButtonClearText:{
-        fontSize:20, 
-        color:"white",
-        textAlign:"center"
-    },    
+        buttonClearText:{
+            fontSize:20, 
+            color:"white",
+            textAlign:"center"
+        },    
   });

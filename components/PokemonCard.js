@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { ActivityIndicator, Button, Image, StyleSheet, Text, TextInput, TextInputComponent, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { typeResources } from '../assets/types/typeResources';
+import { getTypes, typeResources } from '../assets/types/typeResources';
 import TypeCardSmall from './TypeCardSmall';
 import { LinearGradient } from 'expo-linear-gradient';
 import { shadeColor } from '../javascript/shadeColor';
@@ -9,49 +9,36 @@ import Svg, { Defs, Polygon, Stop, LinearGradient as SvgLinearGradient } from 'r
 
 
 function PokemonCard({pokemon, style}) {
-    const navigation = useNavigation();
+    const navigation = useNavigation();   
+    // Kan inte använda pokemon.types då den kan innehålla typer som inte finns i gen 1
+    const [types] = useState(getTypes(pokemon))
     let SecondBackgroundElement = () => (null);
 
-    // Kan inte använda pokemon.types då den kan innehålla typer som inte finns i gen 1
-    const types = []
-    let backgroundGradient;
-
-    let type1 = pokemon.types[0].type.name;
-    let type2 = pokemon.types[1]?.type.name;
-    if(isTypeValid(type1) == false)
-        type1 = pokemon.past_types[0].types[0].type.name;
-    types.push(type1);
-    let color1 = typeResources[type1].color;    
-
-    switch(isTypeValid(type2)){
-        case false: 
-            backgroundGradient = [color1, shadeColor(color1, 35)];
+    let primaryGradient;
+    let primaryColor = typeResources[types[0]].color;   
+    switch(types.length){
+        case 1: 
+            primaryGradient = [primaryColor, shadeColor(primaryColor, 35)];
             break;
 
-        case true:
-            types.push(type2);
+        case 2:
             // Lite mer gradient för att slutet täcks av andra färgen
-            backgroundGradient = [color1, shadeColor(color1, 45)];
-            SecondBackgroundElement = () => createSecondBackground(type2);
-    }
-
-    function isTypeValid(type){
-        if(typeResources[type] != null)
-            return true;
-        else return false;
+            primaryGradient = [primaryColor, shadeColor(primaryColor, 45)];
+            SecondBackgroundElement = () => createSecondBackground(types[1]);
+            break;
     }
 
     function createSecondBackground(type){
-        const color2 = typeResources[type].color;        
-        const backgroundGradient2 = [color2, shadeColor(color2, 45)]; 
+        const color = typeResources[type].color;        
+        const gradient = [color, shadeColor(color, 45)]; 
         return (
             // Svg måste ha en container för att fungera med storlek i procent
             <View style={styles.secondBackgroundColor}>
                 <Svg style={{width:"100%", height:"100%"}} viewBox="0 0 100 100" preserveAspectRatio="none">
                     <Defs>
                         <SvgLinearGradient id={type} x1="1" x2="0" y1="0.5" y2="0.5">
-                            <Stop offset="0" stopColor={backgroundGradient2[0]} />
-                            <Stop offset="1" stopColor={backgroundGradient2[1]} />
+                            <Stop offset="0" stopColor={gradient[0]} />
+                            <Stop offset="1" stopColor={gradient[1]} />
                         </SvgLinearGradient>
                     </Defs>
                     <Polygon points="50,0 100,0 100,100 0,100" fill={`url(#${type})`} />                
@@ -65,7 +52,7 @@ function PokemonCard({pokemon, style}) {
             {/* BackgroundColor 1 */}
             <LinearGradient 
                 style={[styles.background, style]}
-                colors={backgroundGradient} 
+                colors={primaryGradient} 
                 start={{x: 0, y: 0.5}}
                 end={{x: 1, y: 0.5}}  
             >

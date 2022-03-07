@@ -48,8 +48,7 @@ export const typeResources = {
         image: require("./icons/GO_Fighting.webp"),
     },
     fire:{
-        // color: "#fca052",
-        color: "#ed6340",
+        color: "#fca052",
         image: require("./icons/GO_Fire.webp"),
     },
     flying:{

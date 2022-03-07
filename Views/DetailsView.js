@@ -5,7 +5,7 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 export default function DetailsView({navigation, route}){
 
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [pokemon, setPokemon] = useState(route.params);
     const [rootEvolution, setRootEvolution] = useState();
 
@@ -31,33 +31,51 @@ export default function DetailsView({navigation, route}){
     }
     
 
-    useFocusEffect(        
-        React.useCallback(() => {
-            // Finns id så finns alla properties 
-            if("id" in pokemon)
-               setLoading(false)
-            else{                
-                fetch("https://pokeapi.co/api/v2/pokemon/" + pokemon.name.toLowerCase())
-                .then(res => res.json())
-                .then(data =>{
-                    setPokemon(data)                    
-                })
-                .finally(() => setLoading(false))
-            }
+    useEffect(() => {
+        fetchEvolutions();
+        setIsLoading(false)
+    },[]);
 
-            fetchEvolutions();
-        },[])
-    );
+    const Evolutions = () => {
+        const matchingStyle = {
+            backgroundColor:"purple",
+            color:"white",
+            fontSize:16,            
+        }
+        const RootEvolution = <Text style={rootEvolution.name === pokemon.name && matchingStyle}>{rootEvolution.name}</Text>
+        const NestedEvolutions = createNextEvolutionElements(rootEvolution, {name: pokemon.name, style: matchingStyle});
+        return (
+            <View>
+                {RootEvolution}
+                {NestedEvolutions}
+            </View>
+        ); 
+    }
 
-    // const Ev = pokemon => (
-    //     <View>
-    //         <Text>{pokemon.name}</Text>
-    //         {pokemon.evolutions.map()}
-    //     </View>
-    // )
+    function createNextEvolutionElements(pokemon, matchingPokemon){
+        const evolutionElements = []
+        pokemon.evolutions?.map((pokemon, index) => {
+            const symbol = index == 0 ? "V" : "OR";
+            const CurrentPokemon = 
+                <View>
+                    <Text>{symbol}</Text>
+                    <Text style={pokemon.name === matchingPokemon.name && matchingPokemon.style}>{pokemon.name}</Text>
+                </View>
+            
+            const NextEvolution = createNextEvolutionElements(pokemon);
+            const Element = () => (
+                <View >
+                    {CurrentPokemon}
+                    {NextEvolution}                    
+                </View>
+            )
+            evolutionElements.push(<Element key={pokemon.name} />)
+        })
+        return evolutionElements;
+    }
 
     if(isLoading)
-        return <ActivityIndicator size="large" />
+        return <ActivityIndicator size="large" color="black"/>
 
     return(
         <ScrollView>                  
@@ -90,26 +108,8 @@ export default function DetailsView({navigation, route}){
                     })}
                 </View>
 
-                {/* <FlatList
-                    data={evolutions}
-                    keyExtractor={item => item}
-                    renderItem={item =>
-                        <Text>{item.item}</Text>
-                }
-                /> */}
-                {/* {rootEvolution &&
-                    <View>
-                        <Text style={{borderBottomColor:"red", borderBottomWidth:2}}>{rootEvolution.name}</Text>
-                        {rootEvolution.evolutions.map(pokemon => (
-                            <View>
-                                <Text style={{borderBottomColor:"blue", borderBottomWidth:2}}>{pokemon.name}</Text>
-                                {pokemon.evolutions.map(pokemon => (
-                                    <Text>{pokemon.name}</Text>
-                                ))}
-                            </View>
-                        ))}
-                    </View>
-                } */}
+                {rootEvolution && <Evolutions/>}
+                
             </View>     
         </ScrollView>
     )

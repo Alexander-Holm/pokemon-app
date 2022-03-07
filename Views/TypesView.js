@@ -50,7 +50,7 @@ export default function TypesView({navigation, route}) {
             const apiCalls = [];
             for(let i = 0; i < route.params.numberOfPokemon; i++){                
                 const promise = 
-                    fetch("https://pokeapi.co/api/v2/pokemon/" + (i+30))
+                    fetch("https://pokeapi.co/api/v2/pokemon/" + (i+130))
                         .then(res => checkHttpResponse(res))
                         .then(res => res.json())                   
                         .catch(e => httpErrorHandler(e));
@@ -71,6 +71,7 @@ export default function TypesView({navigation, route}) {
         const allPokemon = allPokemonRef.current;        
         setIsLoading(true);
         if(allPokemon == null){
+            console.log(this)
             // Vänta tills pokemon finns och kör sedan den här funktionen igen.
             allPokemonDelegate.current = () => typeButtonOnPress(type);
             return;

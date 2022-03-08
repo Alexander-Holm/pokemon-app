@@ -5,6 +5,7 @@ import TypeCardSmall from "../components/TypeCardSmall";
 import { getTypes } from '../assets/types/typeResources';
 import GradientBackground from '../components/GradientBackground';
 import { theme } from '../theme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function DetailsView({route}){
 
@@ -20,11 +21,18 @@ export default function DetailsView({route}){
 
 
             {/* Bild */}
-            <Image 
+            {/* <Image 
                 style={styles.image}
                 resizeMode="cover"
                 source={{ uri: pokemon.sprites.other["official-artwork"].front_default}} 
-            />
+            /> */}
+
+            <LinearGradient colors={["white", "white"]} style={styles.imageContainer}>
+                <Image 
+                    style={{width: "100%", height: "100%"}}
+                    source={{ uri: pokemon.sprites.other["official-artwork"].front_default}}
+                />
+            </LinearGradient>
 
             {/* Banner */}
             <GradientBackground types={types} contentContainerStyle={styles.banner}>
@@ -55,18 +63,7 @@ export default function DetailsView({route}){
     )
 }
 
-const styles = StyleSheet.create({    
-    image: {
-        alignSelf:"center",
-        margin: 15,
-        width: 300,
-        maxWidth: "100%",
-        aspectRatio: 1,
-        backgroundColor:"white",
-        borderColor: theme?.colors.card || "black",
-        borderRadius: 252,
-        borderWidth: 3,
-    },
+const styles = StyleSheet.create({ 
     id:{
         zIndex: 2,
         position:"absolute",
@@ -79,6 +76,18 @@ const styles = StyleSheet.create({
         fontSize: 18,
         backgroundColor:"gray",
         elevation: 1,        
+    },
+    imageContainer: {
+        alignSelf:"center",
+        margin: 15,
+        padding:15,
+        width: 300,
+        maxWidth: "100%",
+        aspectRatio: 1,
+        backgroundColor:"white",
+        borderColor: theme?.colors.card || "black",
+        borderRadius: 252,
+        borderWidth: 3,
     },
     banner:{
         alignItems:"center",

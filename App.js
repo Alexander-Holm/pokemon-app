@@ -9,25 +9,6 @@ import TypesView from './Views/TypesView';
 import PokemonListHeader from './components/PokemonListHeader';
 import { theme } from './theme';
 
-// Färgschema
-// https://coolors.co/e63946-f1faee-a8dadc-457b9d-1d3557
-
-// https://reactnavigation.org/docs/themes/
-// export const theme = {
-//   ...DefaultTheme,
-//   colors: {
-//     ...DefaultTheme.colors,
-//     background: '#F1FAEE',
-//     card: '#1D3557',
-//     text: 'white',    
-//   },
-//   headerTitleStyle: {
-//       fontSize: 20,
-//       fontWeight:"600",      
-//       color:"white",
-//   }
-// };
-
 export default function App() {
     const Stack = createStackNavigator();
     return (
@@ -39,13 +20,14 @@ export default function App() {
                 <Stack.Screen 
                     name="Types" component={TypesView} 
                     options={{title:"Pokemon-app"}} 
-                    initialParams={{numberOfPokemon: 1}} 
+                    initialParams={{numberOfPokemon: 20}} 
                 />
                 <Stack.Screen 
                     name="PokemonList" component={PokemonListView} 
-                    options={({route}) => ({ headerTitle: <PokemonListHeader type={route.params.type} /> }) } 
+                    options={ ({route}) => ({ headerTitle: <PokemonListHeader type={route.params.type} /> }) } 
                 />
-                <Stack.Screen name="Details" component={DetailsView} 
+                <Stack.Screen 
+                    name="Details" component={DetailsView} 
                     options= { ({route}) => ({ title: route.params.name  }) }
                 />
             </Stack.Navigator>

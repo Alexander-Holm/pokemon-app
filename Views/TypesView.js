@@ -52,7 +52,7 @@ export default function TypesView({navigation, route}) {
             const apiCalls = [];
             for(let i = 0; i < route.params.numberOfPokemon; i++){                
                 const promise = 
-                    fetch("https://pokeapi.co/api/v2/pokemon/" + (i+130))
+                    fetch("https://pokeapi.co/api/v2/pokemon/" + (i+1))
                         .then(res => checkHttpResponse(res))
                         .then(res => res.json())                   
                         .catch(e => errorHandler(e));

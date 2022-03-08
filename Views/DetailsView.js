@@ -2,95 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, Dimensions, Image, SafeAreaView, StyleSheet, Text, TextInput, TextInputComponent, TouchableOpacity, View, } from 'react-native';
 import { useFocusEffect, useLinkProps } from '@react-navigation/native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import TypeCardSmall from "../components/TypeCardSmall";
+import { getTypes } from '../assets/types/typeResources';
 
 export default function DetailsView({navigation, route}){
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [pokemon, setPokemon] = useState(route.params);
-    const [rootEvolution, setRootEvolution] = useState();
-
-    async function fetchEvolutions(){
-        fetch(pokemon.species.url)
-            .then(res => res.json())
-            .then(json => {
-                fetch(json.evolution_chain.url)
-                    .then(res => res.json())
-                        .then(json => {                            
-                            const nestedEvolutions = findEvolutions(json.chain);
-                            setRootEvolution(nestedEvolutions);
-                        })
-            })
-    }
-    function findEvolutions(evolutionChain){
-        const root = { name: evolutionChain.species.name, evolutions: [] };
-        evolutionChain.evolves_to.forEach(item => {
-            const nextEvolution = findEvolutions(item)
-            root.evolutions.push( nextEvolution );
-        })
-        return root;
-    }
-    
-
-    useEffect(() => {
-        fetchEvolutions();
-        setIsLoading(false)
-    },[]);
-
-    const Evolutions = () => {
-        const matchingStyle = {
-            backgroundColor:"purple",
-            color:"white",
-            fontSize:16,            
-        }
-        const RootEvolution = <Text style={rootEvolution.name === pokemon.name && matchingStyle}>{rootEvolution.name}</Text>
-        const NestedEvolutions = createNextEvolutionElements(rootEvolution, {name: pokemon.name, style: matchingStyle});
-        return (
-            <View>
-                {RootEvolution}
-                {NestedEvolutions}
-            </View>
-        ); 
-    }
-
-    function createNextEvolutionElements(pokemon, matchingPokemon){
-        const evolutionElements = []
-        pokemon.evolutions?.map((pokemon, index) => {
-            const symbol = index == 0 ? "V" : "OR";
-            const CurrentPokemon = 
-                <View>
-                    <Text>{symbol}</Text>
-                    <Text style={pokemon.name === matchingPokemon.name && matchingPokemon.style}>{pokemon.name}</Text>
-                </View>
-            
-            const NextEvolution = createNextEvolutionElements(pokemon);
-            const Element = () => (
-                <View >
-                    {CurrentPokemon}
-                    {NextEvolution}                    
-                </View>
-            )
-            evolutionElements.push(<Element key={pokemon.name} />)
-        })
-        return evolutionElements;
-    }
-
-    if(isLoading)
-        return <ActivityIndicator size="large" color="black"/>
+    const [pokemon] = useState(route.params);
+    // Kan inte använda pokemon.types då den kan innehålla typer som inte finns i gen 1
+    const [types] = useState(getTypes(route.params))
 
     return(
         <ScrollView>                  
             <View style={{alignItems:"center"}}>
 
                 {/* Bild */}
-                <Image style={styles.image}
-                    resizeMode="contain"
-                    source={{ uri: pokemon.sprites.other["official-artwork"].front_default}} 
-                />
+                <View style={styles.imageContainer}>
+                    <Text style={styles.id} >#{pokemon.id}</Text>
+                    <Image style={styles.image}
+                        resizeMode="contain"
+                        source={{ uri: pokemon.sprites.other["official-artwork"].front_default}} 
+                    />
+                </View>
 
                 {/* Banner */}
                 <View style={styles.titleContainer}>
-                    <Text style={{fontSize:24, fontWeight:"normal", color:"white"}}>#{pokemon.id} - </Text>
                     <Text style={{fontSize:36, fontWeight:"bold", color:"white"}}>{pokemon.name}</Text>
+                </View>
+
+                <View style={{flexDirection:"row"}}>
+                    {types.map(type => (
+                        <TypeCardSmall type={type} style={{marginRight:5}} key={type}/>
+                    ))}
                 </View>
                 
 
@@ -107,8 +49,6 @@ export default function DetailsView({navigation, route}){
                         )
                     })}
                 </View>
-
-                {rootEvolution && <Evolutions/>}
                 
             </View>     
         </ScrollView>
@@ -116,6 +56,26 @@ export default function DetailsView({navigation, route}){
 }
 
 const styles = StyleSheet.create({
+    imageContainer:{
+        alignItems:"center",
+        justifyContent:"center",
+        width:"100%",
+    },
+    image: {
+        margin: 20,
+        width: "85%",
+        maxWidth:400,
+        maxHeight:"50%",
+        aspectRatio:1,
+        backgroundColor:"white",
+        borderRadius:"50%",
+    },
+    id:{
+        position:"absolute",
+        top:0,
+        left:0,
+        fontSize:20,
+    },
     titleContainer:{
         flexDirection:"row", 
         alignSelf:"stretch", 
@@ -135,14 +95,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.34,
         shadowRadius: 6.27,
         elevation: 10,
-    },
-    image: {
-        alignSelf:"center",
-        width: "85%",
-        maxWidth:600,
-        maxHeight:"50%",
-        aspectRatio:1,
-    },
+    },    
     statsContainer:{
         marginVertical:15,
         width:"85%",

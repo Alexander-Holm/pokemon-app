@@ -71,7 +71,6 @@ export default function TypesView({navigation, route}) {
         const allPokemon = allPokemonRef.current;        
         setIsLoading(true);
         if(allPokemon == null){
-            console.log(this)
             // Vänta tills pokemon finns och kör sedan den här funktionen igen.
             allPokemonDelegate.current = () => typeButtonOnPress(type);
             return;

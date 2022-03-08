@@ -55,15 +55,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,  
         elevation: 7,
         overflow:"hidden",
-
-        position:"relative"
-    },
-    secondBackgroundColor:{
-        position:"absolute",
-        top:0,
-        right:0,
-        height: "100%",
-        width:"35%",
     },
     text:{
         fontSize:20,
@@ -98,7 +89,7 @@ const styles = StyleSheet.create({
         borderColor:"lightgray",
     },
     infoContainer:{
-        zIndex:2,
+        // zIndex:2,
         flexGrow:1,
         justifyContent:"space-between",
         paddingBottom:10,

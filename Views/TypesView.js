@@ -29,22 +29,24 @@ export default function TypesView({navigation, route}) {
         // return för att kunna länka flera 'then()', ex: fetch(url).then().then().catch()
         else return httpResponse;
     }
-    function httpErrorHandler(error){
+    function errorHandler(error){
         setErrors(prevState => [...prevState, error.message]);
     }
 
     useEffect(() => {
         async function fetchTypes(){
-            const res = await fetch("https://pokeapi.co/api/v2/generation/1");
-            try {checkHttpResponse(res)} 
-            catch(e) {httpErrorHandler(e)};
-            const json = await res.json();
+            try {
+                const res = await fetch("https://pokeapi.co/api/v2/generation/1");
+                checkHttpResponse(res)
+                const json = await res.json();
+                let typesDictionary = { all: {pokemon: []} };
+                json.types.forEach(type => {
+                    typesDictionary[type.name] =  {pokemon: []}
+                });
+                setTypes(typesDictionary)
+            } 
+            catch(e) {errorHandler(e)};
 
-            let typesDictionary = { all: {pokemon: []} };
-            json.types.forEach(type => {
-                typesDictionary[type.name] =  {pokemon: []}
-            });
-            setTypes(typesDictionary)
         }
         async function fetchAllPokemon(){
             const apiCalls = [];
@@ -53,7 +55,7 @@ export default function TypesView({navigation, route}) {
                     fetch("https://pokeapi.co/api/v2/pokemon/" + (i+130))
                         .then(res => checkHttpResponse(res))
                         .then(res => res.json())                   
-                        .catch(e => httpErrorHandler(e));
+                        .catch(e => errorHandler(e));
                 apiCalls.push(promise);
             }
             // Vänta på att alla fetch ska bli klara innan setState

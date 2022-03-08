@@ -1,115 +1,114 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Dimensions, Image, SafeAreaView, StyleSheet, Text, TextInput, TextInputComponent, TouchableOpacity, View, } from 'react-native';
-import { useFocusEffect, useLinkProps } from '@react-navigation/native';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, View, } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import TypeCardSmall from "../components/TypeCardSmall";
 import { getTypes } from '../assets/types/typeResources';
+import GradientBackground from '../components/GradientBackground';
+import { theme } from '../theme';
 
-export default function DetailsView({navigation, route}){
+export default function DetailsView({route}){
 
     const [pokemon] = useState(route.params);
     // Kan inte använda pokemon.types då den kan innehålla typer som inte finns i gen 1
     const [types] = useState(getTypes(route.params))
 
-    return(
-        <ScrollView>                  
-            <View style={{alignItems:"center"}}>
+    return(             
+        <ScrollView >
 
-                {/* Bild */}
-                <View style={styles.imageContainer}>
-                    <Text style={styles.id} >#{pokemon.id}</Text>
-                    <Image style={styles.image}
-                        resizeMode="contain"
-                        source={{ uri: pokemon.sprites.other["official-artwork"].front_default}} 
-                    />
-                </View>
+            {/* Id */}
+            <Text style={styles.id}>#{pokemon.id}</Text>
 
-                {/* Banner */}
-                <View style={styles.titleContainer}>
-                    <Text style={{fontSize:36, fontWeight:"bold", color:"white"}}>{pokemon.name}</Text>
-                </View>
 
+            {/* Bild */}
+            <Image 
+                style={styles.image}
+                resizeMode="cover"
+                source={{ uri: pokemon.sprites.other["official-artwork"].front_default}} 
+            />
+
+            {/* Banner */}
+            <GradientBackground types={types} contentContainerStyle={styles.banner}>
+                {/* Namn */}
+                <Text style={styles.name}>{pokemon.name}</Text>
+                {/* Typer */}
                 <View style={{flexDirection:"row"}}>
                     {types.map(type => (
-                        <TypeCardSmall type={type} style={{marginRight:5}} key={type}/>
+                        <TypeCardSmall type={type} style={{margin:10}} key={type}/>
                     ))}
                 </View>
-                
+            </GradientBackground>            
 
-                {/* Stats */}
-                <View style={styles.statsContainer}>
-                    <Text style={{padding:5, borderBottomWidth:2, borderColor:"#1D3557", textAlign:"center", fontSize:24, fontWeight:"bold"}}>Base-stats</Text>
+            {/* Stats */}
+            <View style={styles.statsContainer}>
+                <Text style={{padding:5, textAlign:"center", fontSize:24, fontWeight:"bold"}}>Base-stats</Text>
+                {pokemon.stats.map((item) => {
+                    return(
+                        <View key={item.stat.name} style={styles.statRow}>
+                            <Text style={{fontSize:20, fontWeight:"600", textTransform:"capitalize"}}>{item.stat.name}: </Text>
+                            <Text style={{fontSize:18}}>{item.base_stat}</Text>
+                        </View>
+                    )
+                })}
+            </View>
 
-                    {pokemon.stats.map((item) => {
-                        return(
-                            <View key={item.stat.name} style={styles.statRow}>
-                                <Text style={{fontSize:20}}>{item.stat.name}: </Text>
-                                <Text style={{fontSize:20}}>{item.base_stat}</Text>
-                            </View>
-                        )
-                    })}
-                </View>
-                
-            </View>     
-        </ScrollView>
+        </ScrollView>     
     )
 }
 
-const styles = StyleSheet.create({
-    imageContainer:{
-        alignItems:"center",
-        justifyContent:"center",
-        width:"100%",
-    },
+const styles = StyleSheet.create({    
     image: {
-        margin: 20,
-        width: "85%",
-        maxWidth:400,
-        maxHeight:"50%",
-        aspectRatio:1,
+        alignSelf:"center",
+        margin: 15,
+        width: 300,
+        maxWidth: "100%",
+        aspectRatio: 1,
         backgroundColor:"white",
-        borderRadius:"50%",
+        borderColor: theme?.colors.card || "black",
+        borderRadius: 252,
+        borderWidth: 3,
     },
     id:{
+        zIndex: 2,
         position:"absolute",
         top:0,
         left:0,
-        fontSize:20,
+        margin: 10,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        color: "white",
+        fontSize: 18,
+        backgroundColor:"gray",
+        elevation: 1,        
     },
-    titleContainer:{
-        flexDirection:"row", 
-        alignSelf:"stretch", 
-        justifyContent:"center", 
-        alignItems:"center", 
-        marginVertical:0, 
-        backgroundColor:"#E63946",
-        borderColor:"#1D3557",
-        borderBottomWidth:3,
-        borderTopWidth:3,
+    banner:{
+        alignItems:"center",
+        flexDirection:"column",      
+        borderColor: theme?.colors.card || "black",
+        borderTopWidth: 3,
+        borderBottomWidth: 3,
+    },
+    name:{
+        fontSize: 28,
+        color:"white",
+        fontWeight:"bold",
+        textTransform:"capitalize",
+        textShadowColor:"black",
+        textShadowOffset: {height:0, width:0},
+        textShadowRadius:5,
+    },
 
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 5,
-        },
-        shadowOpacity: 0.34,
-        shadowRadius: 6.27,
-        elevation: 10,
-    },    
     statsContainer:{
+        alignSelf:"center",
+        alignItems:"center",
         marginVertical:15,
-        width:"85%",
-        maxWidth: 600,
-        backgroundColor:"#A8DADC",
-        borderColor:"#1D3557",
-        borderWidth:2,
-        borderRadius:15,
+        marginHorizontal:5,        
     },
     statRow:{
         flexDirection:"row",
         marginVertical:5,  
         alignItems:"center", 
         justifyContent:"space-between",
-        marginHorizontal:40,
+        width:250,
+        maxWidth:"100%",
     }
   });

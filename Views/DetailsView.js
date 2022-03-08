@@ -4,10 +4,10 @@ import { useFocusEffect, useLinkProps } from '@react-navigation/native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 export default function DetailsView({navigation, route}){
-
+    
     const [isLoading, setIsLoading] = useState(true);
     const [pokemon, setPokemon] = useState(route.params);
-    const [rootEvolution, setRootEvolution] = useState();
+    const [rootEvolution, setRootEvolution] = useState();   
 
     async function fetchEvolutions(){
         fetch(pokemon.species.url)
@@ -28,8 +28,7 @@ export default function DetailsView({navigation, route}){
             root.evolutions.push( nextEvolution );
         })
         return root;
-    }
-    
+    }   
 
     useEffect(() => {
         fetchEvolutions();

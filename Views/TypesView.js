@@ -9,10 +9,10 @@ import { getTypes } from '../assets/types/typeResources';
 export default function TypesView({navigation, route}) {
 
     const [isLoading, setIsLoading] = useState(true);
-    const allPokemonDelegate = useRef();
+    const onSetAllPokemonRef = useRef();
     const [allPokemonRef, setAllPokemonRef] = customRef();
     useEffect(() => {
-        allPokemonDelegate.current?.call();
+        onSetAllPokemonRef.current?.call();
     }, [allPokemonRef.current])
     
     const [types, setTypes] = useState({});
@@ -70,14 +70,13 @@ export default function TypesView({navigation, route}) {
     function typeButtonOnPress(type){
         const allPokemon = allPokemonRef.current;        
         setIsLoading(true);
-        if(allPokemon == null){
-            console.log(this)
+        if(allPokemon == null){            
             // Vänta tills pokemon finns och kör sedan den här funktionen igen.
-            allPokemonDelegate.current = () => typeButtonOnPress(type);
+            onSetAllPokemonRef.current = () => typeButtonOnPress(type);
             return;
         }
-        allPokemonDelegate.current = null;
-        const pokemonOfType = types[type].pokemon;               
+        onSetAllPokemonRef.current = null;
+        const pokemonOfType = types[type].pokemon; 
         // Sparar alla pokemon av typen i en array för att inte behöva söka igenom alla igen nästa gång.
         if(pokemonOfType.length < 1){            
             allPokemon.forEach(pokemon => {
@@ -95,11 +94,11 @@ export default function TypesView({navigation, route}) {
             }));
         }
         setIsLoading(false);
-        navigation.navigate("PokemonList", {allPokemon: allPokemon, listPokemon: pokemonOfType, type: type})
+        navigation.navigate("PokemonList", {allPokemon: allPokemon, listPokemon: pokemonOfType, type: type});
     };
 
     if(isLoading)(
-        <ActivityIndicator size="large" style={{alignSelf:"center"}}/>
+        <ActivityIndicator size="large" style={{alignSelf:"center", color:"black"}}/>
     )
 
     if(errors.length > 0)(

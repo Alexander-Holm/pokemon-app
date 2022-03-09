@@ -1,11 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect} from 'react';
-import { ActivityIndicator, Text, View} from 'react-native';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native'
 import {createStackNavigator} from '@react-navigation/stack';
-import PokemonListView from './Views/PokemonListView';
-import DetailsView from './Views/DetailsView';
-import TypesView from './Views/TypesView';
+import PokemonListView from './views/PokemonListView';
+import DetailsView from './views/DetailsView';
+import TypesView from './views/TypesView';
 import PokemonListHeader from './components/PokemonListHeader';
 import { theme } from './theme';
 
@@ -14,13 +12,13 @@ export default function App() {
     return (
         <NavigationContainer theme={theme} >
             <Stack.Navigator 
-                initialRouteName="Types" 
+                initialRouteName="Types"
                 screenOptions={theme}
             >
                 <Stack.Screen 
                     name="Types" component={TypesView} 
                     options={{title:"Pokemon-app"}} 
-                    initialParams={{numberOfPokemon: 20}} 
+                    initialParams={{numberOfPokemon: 30}} 
                 />
                 <Stack.Screen 
                     name="PokemonList" component={PokemonListView} 

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { typeResources, getTypes } from '../assets/types/typeResources';
 
-export default function SearchBar({data}){
+export default function SearchBar({data, style}){
     const navigation = useNavigation()
     const [filteredPokemon, setFilteredPokemon] = useState([])
     const [searchValue, setSearchValue] = useState("")
@@ -39,11 +39,13 @@ export default function SearchBar({data}){
     )
 
     return (        
-        <View>
-            <View style={styles.searchBar}>
-                <TextInput placeholder="Search..." onChangeText={(text) => updateSearchResults(text)} value={searchValue}
+        <View style={[styles.container, style]}>
+            <View style={styles.inputContainer}>
+                <TextInput placeholder="Search..." onChangeText={(text) => updateSearchResults(text)} 
+                    value={searchValue}
                     style={styles.inputField}
-                />
+                >
+                </TextInput>
                 {searchValue != "" &&
                     <TouchableOpacity style={styles.buttonClear}
                         onPress={() => clearSearch()} >
@@ -72,7 +74,11 @@ export default function SearchBar({data}){
 }
 
 const styles = StyleSheet.create({
-    searchBar:{
+    container:{
+        margin: 15,
+        marginBottom:0,
+    },
+    inputContainer:{
         backgroundColor:"white",
         flexDirection:"row",
         alignItems:"center",
@@ -80,8 +86,6 @@ const styles = StyleSheet.create({
         borderWidth:1, 
         borderRadius:0,
         padding:5,
-        margin: 5,
-        marginBottom:0,
         height: 45
     },
     inputField:{

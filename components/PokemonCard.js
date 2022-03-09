@@ -7,14 +7,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import GradientBackground from './GradientBackground';
 
 
-function PokemonCard({pokemon, style}) {
+function PokemonCard({ pokemon, style }) {
     const navigation = useNavigation();   
     // Kan inte använda pokemon.types då den kan innehålla typer som inte finns i gen 1
-    const [types] = useState(getTypes(pokemon))
+    const types = getTypes(pokemon);
 
     return (        
         <TouchableOpacity onPress={() => navigation.navigate("Details", pokemon)} >
-            <GradientBackground types={types} style={[styles.background, style]}>
+            <GradientBackground types={types} style={[styles.background, style]} >
                 {/* Image */}
                 <LinearGradient colors={["white", "#ededed"]} style={styles.imageContainer}>
                     <Image 
@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
     background: {
         flexDirection:"row",
         minWidth:250,
-        margin:5,
+        maxWidth: "100%",
+        margin: 7,
         borderRadius: 5,   
         shadowColor: 'black',
         shadowOffset: { width: 0, height: 2 },
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     id:{
         marginTop:5,
         marginRight:5,
+        marginLeft:10,
         paddingHorizontal: 5,
         paddingVertical:3,
         fontSize:13,
@@ -80,16 +82,15 @@ const styles = StyleSheet.create({
     },
     imageContainer:{
         alignSelf:"center",
-        width:80, 
-        height: 80,
-        padding:7,
+        width: 90, 
+        height: 90,
+        padding: 5,
         margin: 10,
         borderRadius: 100, 
         borderWidth:1,
-        borderColor:"lightgray",
+        borderColor:"gray",
     },
     infoContainer:{
-        // zIndex:2,
         flexGrow:1,
         justifyContent:"space-between",
         paddingBottom:10,

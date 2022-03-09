@@ -6,24 +6,20 @@ import PokemonCard from '../components/PokemonCard';
 import SearchBar from '../components/SearchBar';
 
 export default function PokemonListView({route}) {
-
-    const [allPokemon, setAllPokemon] = useState(route.params.allPokemon);
-    const [listPokemon, setListPokemon] = useState(route.params.listPokemon);
+    
+    const [listPokemon] = useState(route.params.listPokemon);
 
     return (
         <View>               
-            <SearchBar data={allPokemon} />
-
             <FlatList
                 // Extra paddingBottom annars klipps sista biten av
-                contentContainerStyle={{alignSelf:"center", paddingTop:20, paddingBottom:100}}
+                contentContainerStyle={{alignSelf:"center", paddingTop:20, paddingBottom:100 }}
                 data={listPokemon}
-                keyExtractor={item => item.id.toString()}
-                renderItem={item =>
-                    <PokemonCard pokemon={item.item} />
+                keyExtractor={item => item.id}
+                renderItem={ ({item}) =>
+                    <PokemonCard pokemon={item} />
                 }
             />
-
         </View>
    )  
 }

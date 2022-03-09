@@ -19,14 +19,7 @@ export default function DetailsView({route}){
             {/* Id */}
             <Text style={styles.id}>#{pokemon.id}</Text>
 
-
             {/* Bild */}
-            {/* <Image 
-                style={styles.image}
-                resizeMode="cover"
-                source={{ uri: pokemon.sprites.other["official-artwork"].front_default}} 
-            /> */}
-
             <LinearGradient colors={["white", "white"]} style={styles.imageContainer}>
                 <Image 
                     style={{width: "100%", height: "100%"}}
@@ -86,11 +79,12 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         backgroundColor:"white",
         borderColor: theme?.colors.card || "black",
-        borderRadius: 252,
+        borderRadius: 999,
         borderWidth: 3,
     },
     banner:{
         alignItems:"center",
+        justifyContent:"center",
         flexDirection:"column",      
         borderColor: theme?.colors.card || "black",
         borderTopWidth: 3,

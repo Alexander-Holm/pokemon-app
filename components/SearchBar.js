@@ -1,8 +1,9 @@
 import { ActivityIndicator, Button, StyleSheet, Text, TextInput, Image, TouchableOpacity, View, KeyboardAvoidingView } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { typeResources, getTypes } from '../assets/types/typeResources';
+import { theme } from '../theme';
 
 export default function SearchBar({data, style}){
     const navigation = useNavigation()
@@ -32,7 +33,8 @@ export default function SearchBar({data, style}){
         setFilteredPokemon(tempArray)
     }
 
-    useFocusEffect(        
+    // useFocusEffect istället för useEffect för att rensa input varje gång komponenten visas på nytt.
+    useFocusEffect(
         React.useCallback(() => {
             clearSearch()
         },[])
@@ -41,8 +43,10 @@ export default function SearchBar({data, style}){
     return (        
         <View style={[styles.container, style]}>
             <View style={styles.inputContainer}>
-                <TextInput placeholder="Search..." onChangeText={(text) => updateSearchResults(text)} 
+                <TextInput 
+                    placeholder="Search..." 
                     value={searchValue}
+                    onChangeText={(text) => updateSearchResults(text)} 
                     style={styles.inputField}
                 >
                 </TextInput>
@@ -54,8 +58,12 @@ export default function SearchBar({data, style}){
                 }
             </View>
 
-            <FlatList data={filteredPokemon} keyExtractor={item => item.name} renderItem={ ({item: pokemon }) => 
-                <TouchableOpacity onPress={() => navigation.navigate("Details", pokemon)} style={styles.resultRow}>
+            <FlatList 
+                data={filteredPokemon} 
+                keyExtractor={item => item.name} 
+                contentContainerStyle={styles.resultContainer}
+                renderItem={ ({item: pokemon }) => 
+                <TouchableOpacity onPress={() => navigation.navigate("Details", pokemon)} style={styles.resultRow}>                    
                     <Image 
                         style={styles.pokemonImage}
                         source={{ uri: pokemon.sprites.other["official-artwork"].front_default}}
@@ -66,6 +74,7 @@ export default function SearchBar({data, style}){
                         ))}
                     </View>
                     <Text style={styles.pokemonName}>{pokemon.name}</Text>
+                    <Text style={styles.id}>#{pokemon.id}</Text>
                 </TouchableOpacity>
             } />            
         </View>
@@ -75,8 +84,9 @@ export default function SearchBar({data, style}){
 
 const styles = StyleSheet.create({
     container:{
-        margin: 15,
+        margin: 20,
         marginBottom:0,
+        elevation: 15,
     },
     inputContainer:{
         backgroundColor:"white",
@@ -89,20 +99,26 @@ const styles = StyleSheet.create({
         height: 45
     },
     inputField:{
-        flex:1,
+        flexGrow: 1,
         fontSize:22,
+    },
+    resultContainer:{
+        backgroundColor:"white",
     },
     resultRow:{
         display:"flex",
         flexDirection:"row",
         alignItems:"center",       
         padding: 10, 
-        borderColor:"black", 
-        borderBottomWidth:1, 
-    },
+        borderColor:"gray", 
+        borderWidth: 1,
+        borderTopWidth: 0, 
+
+    },        
         pokemonImage:{
             width: 50, 
             height: 50,
+            marginHorizontal: 10,
         },
         pokemonTypesContainer:{
             justifyContent:"center",
@@ -112,25 +128,34 @@ const styles = StyleSheet.create({
                 height: 18,
                 width: 18,
                 margin: 2,
-            },
+            },        
         pokemonName:{        
             fontSize:20,
             textTransform:"capitalize",
-            marginLeft:5,
-        },    
+            marginHorizontal:10,
+        }, 
+        id:{
+            paddingVertical: 0,
+            paddingHorizontal: 5,
+            
+            color: "black",
+            fontSize: 14,
+            fontWeight:"600",
+            backgroundColor:"lightgray",
+            elevation: 3,            
+        },   
     buttonClear:{
-        marginHorizontal:3,        
-        padding:7,
-        backgroundColor:"#457B9D",
-        borderRadius:10,
-        alignContent:"center",
+        width:35,
+        height:35,
+        margin: 5,
+        backgroundColor:"gray",
+        borderRadius:99,
+        alignItems:"center",
         justifyContent:"center",
-        width:40,
-        height: 40,
+        
     },
         buttonClearText:{
             fontSize:20, 
             color:"white",
-            textAlign:"center"
         },    
   });

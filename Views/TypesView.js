@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         justifyContent:"center",
         padding:5,
-        paddingTop:10,
+        paddingTop:20,
         // Extra paddingBottom annars klipps sista biten av
         paddingBottom:100,
     },

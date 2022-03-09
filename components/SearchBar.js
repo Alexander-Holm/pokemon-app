@@ -1,9 +1,8 @@
-import { ActivityIndicator, Button, StyleSheet, Text, TextInput, Image, TouchableOpacity, View, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, TextInput, Image, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { typeResources, getTypes } from '../assets/types/typeResources';
-import { theme } from '../theme';
 
 export default function SearchBar({data, style}){
     const navigation = useNavigation()

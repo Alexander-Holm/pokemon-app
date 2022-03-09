@@ -9,12 +9,11 @@ import { getTypes } from '../assets/types/typeResources';
 export default function TypesView({navigation, route}) {
 
     const [isLoading, setIsLoading] = useState(true);
-    const allPokemonDelegate = useRef();
+    const onPokemonSet = useRef();
     const [allPokemonRef, setAllPokemonRef] = customRef();
     useEffect(() => {
-        allPokemonDelegate.current?.call();
-    }, [allPokemonRef.current])
-    
+        onPokemonSet.current?.call();
+    }, [allPokemonRef.current])    
     const [types, setTypes] = useState({});
     const [errors, setErrors] = useState([]);
 
@@ -46,7 +45,6 @@ export default function TypesView({navigation, route}) {
                 setTypes(typesDictionary)
             } 
             catch(e) {errorHandler(e)};
-
         }
         async function fetchAllPokemon(){
             const apiCalls = [];
@@ -74,10 +72,10 @@ export default function TypesView({navigation, route}) {
         setIsLoading(true);
         if(allPokemon == null){
             // Vänta tills pokemon finns och kör sedan den här funktionen igen.
-            allPokemonDelegate.current = () => typeButtonOnPress(type);
+            onPokemonSet.current = () => typeButtonOnPress(type);
             return;
         }
-        allPokemonDelegate.current = null;
+        onPokemonSet.current = null;
         const pokemonOfType = types[type].pokemon;               
         // Sparar alla pokemon av typen i en array för att inte behöva söka igenom alla igen nästa gång.
         if(pokemonOfType.length < 1){            
@@ -100,7 +98,7 @@ export default function TypesView({navigation, route}) {
     };
 
     if(isLoading)(
-        <ActivityIndicator size="large" style={{alignSelf:"center"}}/>
+        <ActivityIndicator size="large" style={{alignSelf:"center", color:"black"}}/>
     )
 
     if(errors.length > 0)(
@@ -122,8 +120,8 @@ export default function TypesView({navigation, route}) {
             {/* ScrollView istället för FlatList för att kunna ha flex-wrap */}
             <ScrollView contentContainerStyle={styles.container} >
                 {/* Måste ha sort(), ordningen byts av någon anledning när man trycker på någon och sen går tillbaka */}
-                {Object.keys(types).sort().map(item => (
-                    <TypeCard type={item} onPress={() => typeButtonOnPress(item)} key={item} />
+                {Object.keys(types).sort().map(type => (
+                    <TypeCard type={type} onPress={() => typeButtonOnPress(type)} key={type} />
                 ))}
             </ScrollView>
         </View>

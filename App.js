@@ -18,7 +18,7 @@ export default function App() {
                 <Stack.Screen 
                     name="Types" component={TypesView} 
                     options={{title:"Pokemon-app"}} 
-                    initialParams={{numberOfPokemon: 4}} 
+                    initialParams={{numberOfPokemon: 151}} 
                 />
                 <Stack.Screen 
                     name="PokemonList" component={PokemonListView} 

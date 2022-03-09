@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useReducer } from 'react';
-import { ActivityIndicator, Button, Dimensions, StyleSheet, Text, TextInput, TextInputComponent, TouchableOpacity, View, Image } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import PokemonCard from '../components/PokemonCard';
-import SearchBar from '../components/SearchBar';
 
 export default function PokemonListView({route}) {
     

@@ -68,7 +68,14 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 18,
         backgroundColor:"gray",
-        elevation: 1,        
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.18,
+        shadowRadius: 1.00,
+        elevation: 1,     
     },
     imageContainer: {
         alignSelf:"center",

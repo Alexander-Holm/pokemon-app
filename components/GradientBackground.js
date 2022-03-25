@@ -83,8 +83,6 @@ const styles = StyleSheet.create({
     contentContainer:{
         zIndex:2,
         flexDirection:"row",
-        // height:"100%",
-        // width:"100%",
         flexGrow:1,
     },
     secondBackgroundElement:{
